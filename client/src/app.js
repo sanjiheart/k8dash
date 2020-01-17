@@ -5,7 +5,7 @@ import Error from './components/error';
 import {initRouter} from './router';
 import log from './utils/log';
 import Button from './components/button';
-import LogoSvg from './art/logoSvg';
+import LogoPng from './art/customLogoPng';
 import HamburgerSvg from './art/hamburgerSvg';
 
 const genericError = (
@@ -37,8 +37,8 @@ class App extends Component {
                         <HamburgerSvg className='svg_button' />
                     </Button>
 
-                    <a href='#!'>
-                        <LogoSvg className='titleBar_logo' />
+                    <a href='#!' style={{marginTop: '6px'}}>
+                        <LogoPng className='titleBar_logo' />
                     </a>
                 </div>
 
