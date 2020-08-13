@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, {Fragment} from 'react';
 import Base from '../components/base';
 import api from '../services/api';
@@ -61,7 +62,7 @@ export default class Ingress extends Base {
 
                         <TableBody items={rules} colSpan='4' row={rule => (
                             <Fragment key={rule.host}>
-                                {rule.http.paths.map(path => (
+                                {_.map(rule.http.paths, path => (
                                     <tr key={`${rule.host}:${path.path}`}>
                                         <td>{rule.host}</td>
                                         <td>{path.path}</td>

@@ -6,6 +6,7 @@ import LoadingEllipsis from './loadingEllipsis';
 import {MetadataHeaders, MetadataColumns, TableBody, objectMap} from './listViewHelpers';
 import {unparseCpu, unparseRam} from '../utils/unitHelpers';
 import {getNodeResourceValue, getNodeResourcePercent, getNodeUsagePercent, getNodeUsage, getNodeResourcesAvailable} from '../utils/metricsHelpers';
+import getReadyStatus from '../utils/nodeHelpers';
 
 export default class NodesPanel extends Base {
     constructor(props) {
@@ -76,7 +77,7 @@ export default class NodesPanel extends Base {
                         <tr key={x.metadata.uid}>
                             <MetadataColumns item={x} href={`#!node/${x.metadata.name}`} />
                             <td className='smallText optional_medium'>{objectMap(x.metadata.labels)}</td>
-                            <td className='optional_small'>{getReadyStatus(x)}</td>
+                            <td className='optional_small center'>{statusSymbol(getReadyStatus(x))}</td>
                             <td>{getPercentDisplay(x, metrics, 'cpu')}</td>
                             <td className='optional_xsmall'>{getResourcePercentDisplay(x, pods, 'cpu', 'requests')}</td>
                             <td className='optional_xsmall'>{getResourcePercentDisplay(x, pods, 'cpu', 'limits')}</td>
@@ -91,12 +92,22 @@ export default class NodesPanel extends Base {
     }
 }
 
-function getReadyStatus({status}) {
-    if (!status.conditions) return null;
 
-    const ready = status.conditions.find(y => y.type === 'Ready');
-    return ready && ready.status;
+/** Simple mapping between ready statuses and an UTF-8 symbol character */
+const statusesToUtf8 = { "True": "\u2713", "False": "\uD83D\uDEC7", "Unknown": "\u003F" }
+
+/**
+ * 
+ * @param {*statusTxt a status text (as returned by getReadyStatus for example) }
+ * @returns a dedicated span element with an UTF-8 symbol representing the status
+ */
+function statusSymbol(statusTxt) {
+    const cssClass = "node-ready-status-" + statusTxt;
+    const utf8Symbol = statusesToUtf8[statusTxt] || statusesToUtf8["Unknown"];
+    return <span class={cssClass} title={statusTxt}>{utf8Symbol}</span>;
 }
+
+
 
 function getPercentDisplay(node, metrics, resource) {
     const used = getNodeUsage(node, metrics, resource);
@@ -104,7 +115,7 @@ function getPercentDisplay(node, metrics, resource) {
 }
 
 function getResourcePercentDisplay(node, pods, resource, type) {
-    const used = getNodeResourceValue(node, pods, resource, type);
+    const used = getNodeResourceValue(node, pods, resource, type, ["Running"]);
     return percent(node, used, resource);
 }
 
