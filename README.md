@@ -131,6 +131,10 @@ K8dash relies heavily on [metrics-server](https://github.com/kubernetes-incubato
 # Development
 K8dash is made up of 2 parts. The server and the client.
 
+### Remote K8S connection requirements
+  1. Copy remote ~/.kube/config to local ~/.kube/config
+  2. Copy token (which secret name is k8dash-sa-token-xxxxx) to be the value of **authToken** of Local Storage after the client starts.
+
 ### Server
 To run the server, run `npm i` from the `/server` directory to install dependencies and then `npm start` to run the server.
 The server is a simple express.js server that is primarily responsible for proxying requests to the Kubernetes api server.
